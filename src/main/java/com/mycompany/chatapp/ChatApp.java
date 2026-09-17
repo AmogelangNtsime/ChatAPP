@@ -57,5 +57,6 @@ public class ChatApp {
                     + "eight characters, a capital letter, a number, "
                     + "and a special character.");
         }
+   
     }
 }
