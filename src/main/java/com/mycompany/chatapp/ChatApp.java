@@ -57,8 +57,7 @@ public class ChatApp {
                     + "eight characters, a capital letter, a number, "
                     + "and a special character.");
         }
-   
-    if (login.checkCellPhoneNumber()) {
+   if (login.checkCellPhoneNumber()) {
             System.out.println("Cell phone number successfully added.");
         } else {
             System.out.println("Cell phone number is incorrectly formatted "
