@@ -1,0 +1,61 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ */
+
+package com.mycompany.chatapp;
+
+import java.util.Scanner;
+
+/**
+ *
+ * @author Student
+ */
+public class ChatApp {
+
+    public static void main(String[] args) {
+        
+     Scanner scanner = new Scanner(System.in);
+
+        System.out.println("====================================");
+        System.out.println("          CHAT APPLICATION");
+        System.out.println("====================================");
+
+        System.out.println("Please enter your first name: ");
+        String firstName = scanner.nextLine();
+
+        System.out.println("Please enter your last name: ");
+        String lastName = scanner.nextLine();
+
+        System.out.println("Please enter your username: ");
+        String username = scanner.nextLine();
+
+        System.out.println("Please enter your password: ");
+        String password = scanner.nextLine();
+
+        System.out.println("Please enter your cellphone number: ");
+        String cellphone = scanner.nextLine();
+
+        // Creates a login object using the user's information
+        Login login = new Login(username, password, cellphone, firstName, lastName);
+
+        System.out.println();
+        System.out.println("----------- REGISTRATION -----------");
+
+        if (login.checkUserName()) {
+            System.out.println("Username successfully captured.");
+        } else {
+            System.out.println("Username is not correctly formatted; "
+                    + "please ensure that your username contains an underscore "
+                    + "and is no more than five characters in length.");
+        }
+
+        if (login.checkPasswordComplexity()) {
+            System.out.println("Password successfully captured.");
+        } else {
+            System.out.println("Password is not correctly formatted; "
+                    + "please ensure that the password contains at least "
+                    + "eight characters, a capital letter, a number, "
+                    + "and a special character.");
+        }
+    }
+}
