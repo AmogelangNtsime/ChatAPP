@@ -58,5 +58,40 @@ public class ChatApp {
                     + "and a special character.");
         }
    
+    if (login.checkCellPhoneNumber()) {
+            System.out.println("Cell phone number successfully added.");
+        } else {
+            System.out.println("Cell phone number is incorrectly formatted "
+                    + "or does not contain an international code; "
+                    + "please correct the number and try again.");
+        }
+
+        System.out.println();
+        System.out.println(login.registerUser());
+
+        // Login should only happen if registration details are correct
+        if (login.checkUserName()
+                && login.checkPasswordComplexity()
+                && login.checkCellPhoneNumber()) {
+
+            System.out.println();
+            System.out.println("--------------- LOGIN ---------------");
+
+            System.out.println("Please enter username: ");
+            String enteredUsername = scanner.nextLine();
+
+            System.out.println("Please enter password: ");
+            String enteredPassword = scanner.nextLine();
+
+            login.loginUser(enteredUsername, enteredPassword);
+
+            System.out.println(login.returnLoginStatus());
+
+        } else {
+            System.out.println();
+            System.out.println("Registration unsuccessful. Please correct your details.");
+        }
+
+        scanner.close();
     }
 }
