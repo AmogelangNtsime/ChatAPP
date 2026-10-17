@@ -112,4 +112,98 @@ public class ChatApp {
 
             String input = scanner.nextLine();
 
-            
+            try {
+                choice = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                choice = 0;
+            }
+
+            switch (choice) {
+
+                case 1:
+
+                    // Send messages until the chosen limit is reached
+                    while (messagesCreated < numberOfMessages) {
+
+                        System.out.println("\nMessage "
+                                + (messagesCreated + 1)
+                                + " of " + numberOfMessages);
+
+                        System.out.print("Enter recipient cellphone number: ");
+                        String recipient = scanner.nextLine();
+
+                        System.out.print("Enter your message: ");
+                        String messageText = scanner.nextLine();
+
+                        Message message = new Message(
+                                ++messageNumber, recipient, messageText);
+
+                        System.out.println(
+                                "Message ID generated: "
+                                + message.getMessageID());
+
+                        System.out.println(message.checkRecipientCell());
+                        System.out.println(message.checkMessageLength());
+
+                        if (!message.checkMessageID()
+                                || !message.checkRecipientCell().equals(
+                                "Cell phone number successfully captured.")
+                                || !message.checkMessageLength().equals(
+                                "Message ready to send.")) {
+
+                            System.out.println(
+                                    "Please correct the message details.");
+                            continue;
+                        }
+
+                        System.out.println(
+                                "Message Hash: " + message.createMessageHash());
+
+                        System.out.println(message.SentMessage());
+
+                        if ("Sent".equals(message.getMessageStatus())) {
+
+                            System.out.println("Message ID: "
+                                    + message.getMessageID());
+                            System.out.println("Message Hash: "
+                                    + message.getMessageHash());
+                            System.out.println("Recipient: "
+                                    + message.getRecipient());
+                            System.out.println("Message: "
+                                    + message.getMessageText());
+
+                            messagesCreated++;
+                        }
+                    }
+
+                    System.out.println(
+                            "You have completed your selected messages.");
+                    System.out.println(
+                            "Total messages sent: "
+                            + new Message(0, "+27812345678", "Count")
+                                    .returnTotalMessages());
+
+                    break;
+
+                case 2:
+
+                    System.out.println("Coming Soon.");
+                    break;
+
+                case 3:
+
+                    System.out.println(
+                            "Thank you for using QuickChat.");
+                    break;
+
+                default:
+
+                    System.out.println(
+                            "Invalid option. Please choose 1, 2 or 3.");
+                    break;
+            }
+        }
+
+        scanner.close();
+    }
+}
