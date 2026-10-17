@@ -14,83 +14,102 @@ public class ChatApp {
 
     public static void main(String[] args) {
         
-     Scanner scanner = new Scanner(System.in);
+      Scanner scanner = new Scanner(System.in);
 
         System.out.println("====================================");
         System.out.println("          CHAT APPLICATION");
         System.out.println("====================================");
 
-        System.out.println("Please enter your first name: ");
+        // PART 1: REGISTRATION
+        System.out.print("Please enter your first name: ");
         String firstName = scanner.nextLine();
 
-        System.out.println("Please enter your last name: ");
+        System.out.print("Please enter your last name: ");
         String lastName = scanner.nextLine();
 
-        System.out.println("Please enter your username: ");
+        System.out.print("Please enter your username: ");
         String username = scanner.nextLine();
 
-        System.out.println("Please enter your password: ");
+        System.out.print("Please enter your password: ");
         String password = scanner.nextLine();
 
-        System.out.println("Please enter your cellphone number: ");
+        System.out.print("Please enter your cellphone number: ");
         String cellphone = scanner.nextLine();
 
-        // Creates a login object using the user's information
-        Login login = new Login(username, password, cellphone, firstName, lastName);
+        Login login = new Login(
+                username, password, cellphone, firstName, lastName);
 
-        System.out.println();
-        System.out.println("----------- REGISTRATION -----------");
+        System.out.println("\n----------- REGISTRATION -----------");
 
-        if (login.checkUserName()) {
-            System.out.println("Username successfully captured.");
-        } else {
-            System.out.println("Username is not correctly formatted; "
-                    + "please ensure that your username contains an underscore "
-                    + "and is no more than five characters in length.");
-        }
-
-        if (login.checkPasswordComplexity()) {
-            System.out.println("Password successfully captured.");
-        } else {
-            System.out.println("Password is not correctly formatted; "
-                    + "please ensure that the password contains at least "
-                    + "eight characters, a capital letter, a number, "
-                    + "and a special character.");
-        }
-   if (login.checkCellPhoneNumber()) {
-            System.out.println("Cell phone number successfully added.");
-        } else {
-            System.out.println("Cell phone number is incorrectly formatted "
-                    + "or does not contain an international code; "
-                    + "please correct the number and try again.");
-        }
-
-        System.out.println();
         System.out.println(login.registerUser());
 
-        // Login should only happen if registration details are correct
-        if (login.checkUserName()
-                && login.checkPasswordComplexity()
-                && login.checkCellPhoneNumber()) {
+        if (!login.checkUserName()
+                || !login.checkPasswordComplexity()
+                || !login.checkCellPhoneNumber()) {
 
-            System.out.println();
-            System.out.println("--------------- LOGIN ---------------");
-
-            System.out.println("Please enter username: ");
-            String enteredUsername = scanner.nextLine();
-
-            System.out.println("Please enter password: ");
-            String enteredPassword = scanner.nextLine();
-
-            login.loginUser(enteredUsername, enteredPassword);
-
-            System.out.println(login.returnLoginStatus());
-
-        } else {
-            System.out.println();
-            System.out.println("Registration unsuccessful. Please correct your details.");
+            System.out.println(
+                    "Registration unsuccessful. Please correct your details.");
+            scanner.close();
+            return;
         }
 
-        scanner.close();
-    }
-}
+        // PART 1: LOGIN
+        System.out.println("\n--------------- LOGIN ---------------");
+
+        System.out.print("Please enter username: ");
+        String enteredUsername = scanner.nextLine();
+
+        System.out.print("Please enter password: ");
+        String enteredPassword = scanner.nextLine();
+
+        login.loginUser(enteredUsername, enteredPassword);
+
+        System.out.println(login.returnLoginStatus());
+
+        // PART 2: Allow access only after successful login
+        if (!login.loginUser(enteredUsername, enteredPassword)) {
+            scanner.close();
+            return;
+        }
+
+        System.out.println("\nWelcome to QuickChat.");
+
+        // Ask how many messages the user wants to send
+        int numberOfMessages = 0;
+
+        while (numberOfMessages <= 0) {
+
+            System.out.print(
+                    "How many messages would you like to send? ");
+
+            String input = scanner.nextLine();
+
+            try {
+                numberOfMessages = Integer.parseInt(input);
+
+                if (numberOfMessages <= 0) {
+                    System.out.println(
+                            "Please enter a number greater than zero.");
+                }
+
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid whole number.");
+            }
+        }
+
+        int choice = 0;
+        int messagesCreated = 0;
+        int messageNumber = 0;
+
+        // while loop
+        while (choice != 3) {
+
+            System.out.println("\n========== QUICKCHAT MENU ==========");
+            System.out.println("1. Send Messages");
+            System.out.println("2. Show recently sent messages");
+            System.out.println("3. Quit");
+            System.out.print("Choose an option: ");
+
+            String input = scanner.nextLine();
+
+            
