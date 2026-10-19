@@ -78,7 +78,7 @@ public class Message {
                 + excess + "; please reduce the size.";
     }
 
-    // Create the message hash without using arrays
+    // Create the message hash 
     public String createMessageHash() {
 
         String text = messageText.trim();
@@ -190,7 +190,7 @@ public class Message {
         return totalMessages;
     }
 
-    // Store a message in a JSON file
+    // Stores a message in a JSON file
     
 public void storeMessage() {
 
@@ -260,8 +260,6 @@ public void storeMessage() {
         );
     }
 }
-
-    // Escape special characters in message text for JSON
     private String escapeJSON(String text) {
 
         return text.replace("\\", "\\\\")
