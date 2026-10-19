@@ -1,0 +1,12 @@
+
+[
+  {
+    "messageID": "1234567890",
+    "messageNumber": 1,
+    "recipient": "+27821234567",
+    "messageText": "Hello, how are you?",
+    "messageHash": "00:1:HE",
+    "messageStatus": "Stored"
+  }
+]
+
