@@ -66,7 +66,7 @@ public class ChatApp {
 
         System.out.println(login.returnLoginStatus());
 
-        // PART 2: Allow access only after successful login
+        // PART 2 It Allows access only after successful login
         if (!login.loginUser(enteredUsername, enteredPassword)) {
             scanner.close();
             return;
