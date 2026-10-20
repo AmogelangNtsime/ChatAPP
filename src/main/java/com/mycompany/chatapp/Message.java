@@ -3,11 +3,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.chatapp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Random;
+import java.util.Scanner;
 
 public class Message {
 
@@ -18,10 +18,11 @@ public class Message {
     private String messageHash;
     private String messageStatus;
 
-    private static int totalMessages = 0;
-    private static List<Message> sentMessages = new ArrayList<>();
+    private Message next;
 
-    // Constructor
+    private static Message firstSentMessage = null;
+    private static int totalMessages = 0;
+
     public Message(int messageNumber, String recipient,
                    String messageText) {
 
@@ -32,11 +33,10 @@ public class Message {
         this.messageID = generateMessageID();
         this.messageHash = createMessageHash();
         this.messageStatus = "Pending";
+        this.next = null;
     }
 
-    // Generate a random 10-digit message ID
     private String generateMessageID() {
-
         Random random = new Random();
 
         long number = 1_000_000_000L
@@ -46,12 +46,10 @@ public class Message {
         return String.valueOf(number);
     }
 
-    // Check that the message ID has 10 digits
     public boolean checkMessageID() {
         return messageID.matches("\\d{10}");
     }
 
-    // Validate the recipient cellphone number
     public String checkRecipientCell() {
 
         if (recipient != null
@@ -60,12 +58,11 @@ public class Message {
             return "Cell phone number successfully captured.";
         }
 
-        return "Cell phone number is incorrectly formatted or does "
-                + "not contain an international code. Please correct "
-                + "the number and try again.";
+        return "Cell phone number is incorrectly formatted or "
+                + "does not contain an international code. "
+                + "Please correct the number and try again.";
     }
 
-    // Check the message length
     public String checkMessageLength() {
 
         if (messageText.length() <= 250) {
@@ -75,10 +72,9 @@ public class Message {
         int excess = messageText.length() - 250;
 
         return "Message exceeds 250 characters by "
-                + excess + "; please reduce the size.";
+                + excess + ", please reduce the size.";
     }
 
-    // Create the message hash 
     public String createMessageHash() {
 
         String text = messageText.trim();
@@ -101,19 +97,18 @@ public class Message {
         }
 
         return (messageID.substring(0, 2)
-                + ":" + messageNumber
-                + ":" + firstWord + lastWord).toUpperCase();
+                + ":" + messageNumber + ":"
+                + firstWord + lastWord).toUpperCase();
     }
 
-    // Allow the user to choose what to do with the message
     public String SentMessage() {
 
-        java.util.Scanner scanner =
-                new java.util.Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
 
         System.out.println("1. Send Message");
         System.out.println("2. Disregard Message");
-        System.out.println("3. Store Message to send later");
+        System.out.println("3. Store Message");
+
         System.out.print("Choose an option: ");
 
         String choice = scanner.nextLine();
@@ -121,7 +116,6 @@ public class Message {
         return SentMessage(choice);
     }
 
-    // Process the selected message option
     public String SentMessage(String choice) {
 
         switch (choice) {
@@ -138,7 +132,21 @@ public class Message {
                 }
 
                 messageStatus = "Sent";
-                sentMessages.add(this);
+
+                this.next = null;
+
+                if (firstSentMessage == null) {
+                    firstSentMessage = this;
+                } else {
+                    Message current = firstSentMessage;
+
+                    while (current.next != null) {
+                        current = current.next;
+                    }
+
+                    current.next = this;
+                }
+
                 totalMessages++;
 
                 return "Message successfully sent.";
@@ -162,105 +170,119 @@ public class Message {
         }
     }
 
-    // Display all messages sent during this application run
     public String printMessages() {
 
         StringBuilder output = new StringBuilder();
+        Message current = firstSentMessage;
 
-        for (Message message : sentMessages) {
+        while (current != null) {
 
             output.append("Message ID: ")
-                    .append(message.messageID).append("\n");
+                    .append(current.messageID).append("\n");
 
             output.append("Message Hash: ")
-                    .append(message.messageHash).append("\n");
+                    .append(current.messageHash).append("\n");
 
             output.append("Recipient: ")
-                    .append(message.recipient).append("\n");
+                    .append(current.recipient).append("\n");
 
             output.append("Message: ")
-                    .append(message.messageText).append("\n\n");
+                    .append(current.messageText).append("\n\n");
+
+            current = current.next;
         }
 
         return output.toString();
     }
 
-    // Return the total number of messages sent
     public int returnTotalMessages() {
         return totalMessages;
     }
 
-    // Stores a message in a JSON file
-    
-public void storeMessage() {
+    public void storeMessage() {
 
-    java.io.File file = new java.io.File("messages.json");
-    String existingContent = "";
+        File file = new File("messages.json");
+        String existingContent = "";
 
-    try {
-        if (file.exists() && file.length() > 0) {
-            java.util.Scanner reader =
-                    new java.util.Scanner(file, "UTF-8");
+        try {
 
-            reader.useDelimiter("\\Z");
+            if (file.exists() && file.length() > 0) {
 
-            if (reader.hasNext()) {
-                existingContent = reader.next();
+                try (Scanner reader =
+                        new Scanner(file, "UTF-8")) {
+
+                    reader.useDelimiter("\\Z");
+
+                    if (reader.hasNext()) {
+                        existingContent = reader.next();
+                    }
+                }
             }
 
-            reader.close();
-        }
+            String newMessage = "{"
+                    + "\"messageID\":\""
+                    + escapeJSON(messageID) + "\","
+                    + "\"messageNumber\":" + messageNumber + ","
+                    + "\"recipient\":\""
+                    + escapeJSON(recipient) + "\","
+                    + "\"messageText\":\""
+                    + escapeJSON(messageText) + "\","
+                    + "\"messageHash\":\""
+                    + escapeJSON(messageHash) + "\","
+                    + "\"messageStatus\":\"Stored\""
+                    + "}";
 
-        existingContent = existingContent.trim();
+            existingContent = existingContent.trim();
 
-        String newMessage = "{"
-                + "\"messageID\":\"" + escapeJSON(messageID) + "\","
-                + "\"messageNumber\":" + messageNumber + ","
-                + "\"recipient\":\"" + escapeJSON(recipient) + "\","
-                + "\"messageText\":\"" + escapeJSON(messageText) + "\","
-                + "\"messageHash\":\"" + escapeJSON(messageHash) + "\","
-                + "\"messageStatus\":\"Stored\""
-                + "}";
+            String updatedContent;
 
-        String updatedContent;
+            if (existingContent.isEmpty()) {
 
-        if (existingContent.isEmpty()) {
-            updatedContent = "[" + newMessage + "]";
-        } else {
-            if (!existingContent.startsWith("[")
-                    || !existingContent.endsWith("]")) {
+                updatedContent = "[" + newMessage + "]";
+
+            } else if (existingContent.startsWith("[")
+                    && existingContent.endsWith("]")) {
+
+                String inside = existingContent.substring(
+                        1, existingContent.length() - 1
+                ).trim();
+
+                if (inside.isEmpty()) {
+                    updatedContent = "[" + newMessage + "]";
+                } else {
+                    updatedContent = "["
+                            + inside + ","
+                            + newMessage + "]";
+                }
+
+            } else {
+
                 System.out.println(
-                        "The existing messages.json file is not a valid JSON array."
+                        "The existing JSON file is not a JSON array."
                 );
+
                 return;
             }
 
-            String inside = existingContent.substring(
-                    1, existingContent.length() - 1
-            ).trim();
+            try (FileWriter writer =
+                    new FileWriter(file, false)) {
 
-            if (inside.isEmpty()) {
-                updatedContent = "[" + newMessage + "]";
-            } else {
-                updatedContent = "["
-                        + inside + ","
-                        + newMessage + "]";
+                writer.write(updatedContent);
             }
+
+        } catch (IOException e) {
+
+            System.out.println(
+                    "Error storing message: " + e.getMessage()
+            );
         }
-
-        try (FileWriter writer = new FileWriter(file, false)) {
-            writer.write(updatedContent);
-        }
-
-        System.out.println("Message successfully stored.");
-
-    } catch (IOException e) {
-        System.out.println(
-                "Error storing message: " + e.getMessage()
-        );
     }
-}
+
     private String escapeJSON(String text) {
+
+        if (text == null) {
+            return "";
+        }
 
         return text.replace("\\", "\\\\")
                 .replace("\"", "\\\"")
@@ -269,7 +291,6 @@ public void storeMessage() {
                 .replace("\t", "\\t");
     }
 
-    // Getters
     public String getMessageID() {
         return messageID;
     }
