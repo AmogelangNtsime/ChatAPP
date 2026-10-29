@@ -8,11 +8,12 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
+ * Unit tests for the Message class (Part 2 features).
  *
  * @author Student
  */
 public class MessageTest {
-    
+
     @Test
     public void testMessageLengthSuccess() {
         Message message = new Message(
@@ -39,7 +40,7 @@ public class MessageTest {
         );
 
         assertEquals(
-                "Message exceeds 250 characters by 1; please reduce the size.",
+                "Message exceeds 250 characters by 1, please reduce the size.",
                 message.checkMessageLength()
         );
     }
