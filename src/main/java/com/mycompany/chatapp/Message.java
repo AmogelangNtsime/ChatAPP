@@ -3,12 +3,17 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.chatapp;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
 import java.util.Scanner;
 
+/**
+ * Represents one chat message: its ID, hash, recipient, text and status.
+ * Sent messages are also kept in a linked list for Part 2.
+ */
 public class Message {
 
     private String messageID;
@@ -23,14 +28,25 @@ public class Message {
     private static Message firstSentMessage = null;
     private static int totalMessages = 0;
 
+    /** Creates a message with a randomly generated message ID. */
     public Message(int messageNumber, String recipient,
                    String messageText) {
+
+        this(null, messageNumber, recipient, messageText);
+    }
+
+    /**
+     * Creates a message with a given message ID (used for the test data
+     * in the unit tests). A null ID means a new random ID is generated.
+     */
+    public Message(String messageID, int messageNumber,
+                   String recipient, String messageText) {
 
         this.messageNumber = messageNumber;
         this.recipient = recipient;
         this.messageText = messageText;
 
-        this.messageID = generateMessageID();
+        this.messageID = (messageID == null) ? generateMessageID() : messageID;
         this.messageHash = createMessageHash();
         this.messageStatus = "Pending";
         this.next = null;
@@ -102,8 +118,11 @@ public class Message {
     }
 
     public String SentMessage() {
+        return SentMessage(new Scanner(System.in));
+    }
 
-        Scanner scanner = new Scanner(System.in);
+    /** Asks what to do with the message using the scanner it is given. */
+    public String SentMessage(Scanner scanner) {
 
         System.out.println("1. Send Message");
         System.out.println("2. Disregard Message");
@@ -199,6 +218,7 @@ public class Message {
         return totalMessages;
     }
 
+    /** Adds this message to the messages.json file. */
     public void storeMessage() {
 
         File file = new File("messages.json");
@@ -313,5 +333,10 @@ public class Message {
 
     public String getMessageStatus() {
         return messageStatus;
+    }
+
+    /** Sets the flag (Sent, Stored or Disregarded) without sending. */
+    public void setMessageStatus(String messageStatus) {
+        this.messageStatus = messageStatus;
     }
 }
